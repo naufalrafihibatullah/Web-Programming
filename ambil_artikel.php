@@ -2,7 +2,6 @@
 require_once 'koneksi.php';
 header('Content-Type: application/json');
 
-// Menggunakan JOIN untuk mengambil nama penulis dan nama kategori
 $query = "SELECT a.id, a.judul, a.isi, a.gambar, a.hari_tanggal, 
                  p.nama_depan, p.nama_belakang, 
                  k.nama_kategori 

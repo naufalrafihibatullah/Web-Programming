@@ -13,21 +13,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // 1. Enkripsi password dengan BCRYPT sesuai ketentuan
     $password_hash = password_hash($password_raw, PASSWORD_BCRYPT);
-    $foto_nama = ''; // Default jika foto tidak diunggah
+    $foto_nama = ''; 
 
-    // 2. Keamanan Upload File (Menggunakan finfo)
     if (isset($_FILES['foto']) && $_FILES['foto']['error'] !== UPLOAD_ERR_NO_FILE) {
         $foto = $_FILES['foto'];
         
-        // Validasi ukuran (Maksimal 2MB)
         if ($foto['size'] > 2 * 1024 * 1024) {
             echo json_encode(['status' => 'error', 'pesan' => 'Ukuran foto maksimal 2 MB!']);
             exit;
         }
 
-        // Validasi tipe file asli dengan finfo
         $finfo = new finfo(FILEINFO_MIME_TYPE);
         $mime_type = $finfo->file($foto['tmp_name']);
         $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
@@ -37,7 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        // Generate nama file unik agar tidak saling menimpa
         $ekstensi = pathinfo($foto['name'], PATHINFO_EXTENSION);
         $foto_nama = uniqid() . '.' . $ekstensi;
         $tujuan = 'uploads_penulis/' . $foto_nama;
@@ -48,7 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // 3. Simpan ke database dengan Prepared Statements
     $stmt = $conn->prepare("INSERT INTO penulis (nama_depan, nama_belakang, user_name, password, foto) VALUES (?, ?, ?, ?, ?)");
     $stmt->bind_param("sssss", $nama_depan, $nama_belakang, $user_name, $password_hash, $foto_nama);
 

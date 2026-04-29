@@ -13,7 +13,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // --- FITUR AUTO-GENERATE TANGGAL (Sesuai Soal) ---
     date_default_timezone_set('Asia/Jakarta');
     $hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
     $bulan = [1=>'Januari', 2=>'Februari', 3=>'Maret', 4=>'April', 5=>'Mei', 6=>'Juni', 7=>'Juli', 8=>'Agustus', 9=>'September', 10=>'Oktober', 11=>'November', 12=>'Desember'];
@@ -24,10 +23,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tahun = $sekarang->format('Y');
     $jam = $sekarang->format('H:i');
     
-    // Hasilnya misal: "Senin, 13 April 2026 | 15:17"
     $hari_tanggal = "$nama_hari, $tanggal $nama_bulan $tahun | $jam";
 
-    // --- KEAMANAN UPLOAD GAMBAR ---
     if (!isset($_FILES['gambar']) || $_FILES['gambar']['error'] === UPLOAD_ERR_NO_FILE) {
         echo json_encode(['status' => 'error', 'pesan' => 'Gambar artikel wajib diunggah!']); 
         exit;
@@ -54,7 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // --- SIMPAN KE DATABASE ---
     $stmt = $conn->prepare("INSERT INTO artikel (id_penulis, id_kategori, judul, isi, gambar, hari_tanggal) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("iissss", $id_penulis, $id_kategori, $judul, $isi, $nama_gambar, $hari_tanggal);
 

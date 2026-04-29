@@ -5,7 +5,6 @@ header('Content-Type: application/json');
 if (isset($_GET['id'])) {
     $id = intval($_GET['id']);
     
-    // Ambil nama gambar sebelum dihapus
     $stmt = $conn->prepare("SELECT gambar FROM artikel WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
@@ -16,7 +15,6 @@ if (isset($_GET['id'])) {
     $stmt->bind_param("i", $id);
 
     if ($stmt->execute()) {
-        // Hapus file fisik gambar di server
         if (!empty($gambar_artikel) && file_exists('uploads_artikel/' . $gambar_artikel)) {
             unlink('uploads_artikel/' . $gambar_artikel);
         }

@@ -9,16 +9,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_kategori = intval($_POST['id_kategori']);
     $isi = htmlspecialchars($_POST['isi'], ENT_QUOTES, 'UTF-8');
 
-    // Ambil nama gambar lama dari database
     $stmt = $conn->prepare("SELECT gambar FROM artikel WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $gambar_lama = $stmt->get_result()->fetch_assoc()['gambar'];
     $stmt->close();
 
-    $gambar_baru = $gambar_lama; // Secara default, pertahankan gambar lama
+    $gambar_baru = $gambar_lama; 
 
-    // Jika ada gambar baru yang diunggah
     if (isset($_FILES['gambar']) && $_FILES['gambar']['error'] !== UPLOAD_ERR_NO_FILE) {
         $gambar = $_FILES['gambar'];
         if ($gambar['size'] > 2 * 1024 * 1024) {

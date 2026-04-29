@@ -5,7 +5,6 @@ header('Content-Type: application/json');
 if (isset($_GET['id'])) {
     $id = intval($_GET['id']);
     
-    // Ambil nama foto dulu sebelum dihapus
     $stmt = $conn->prepare("SELECT foto FROM penulis WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();

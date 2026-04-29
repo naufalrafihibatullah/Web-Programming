@@ -9,16 +9,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_name = htmlspecialchars($_POST['username'], ENT_QUOTES, 'UTF-8');
     $password_raw = $_POST['password'] ?? '';
 
-    // Ambil foto lama dari database
     $stmt = $conn->prepare("SELECT foto FROM penulis WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $foto_lama = $stmt->get_result()->fetch_assoc()['foto'];
     $stmt->close();
 
-    $foto_baru = $foto_lama; // Secara default, pertahankan foto lama
+    $foto_baru = $foto_lama;
 
-    // Cek apakah ada upload foto baru
     if (isset($_FILES['foto']) && $_FILES['foto']['error'] !== UPLOAD_ERR_NO_FILE) {
         $foto = $_FILES['foto'];
         if ($foto['size'] > 2 * 1024 * 1024) {
@@ -33,14 +31,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $ekstensi = pathinfo($foto['name'], PATHINFO_EXTENSION);
         $foto_baru = uniqid() . '.' . $ekstensi;
         if (move_uploaded_file($foto['tmp_name'], 'uploads_penulis/' . $foto_baru)) {
-            // Hapus foto lama di server agar tidak menumpuk (kecuali default.png)
             if (!empty($foto_lama) && $foto_lama !== 'default.png' && file_exists('uploads_penulis/' . $foto_lama)) {
                 unlink('uploads_penulis/' . $foto_lama);
             }
         }
     }
 
-    // Siapkan query update (bedakan jika password diganti atau tidak)
     if (!empty($password_raw)) {
         $password_hash = password_hash($password_raw, PASSWORD_BCRYPT);
         $query = "UPDATE penulis SET nama_depan=?, nama_belakang=?, user_name=?, password=?, foto=? WHERE id=?";

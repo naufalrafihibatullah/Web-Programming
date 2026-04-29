@@ -154,8 +154,7 @@
     </div>
 
     <script>
-        // Fungsi utama untuk mengatur pergantian menu
-        // Fungsi utama untuk mengatur pergantian menu
+        // Fungsi utama pergantian menu
         function loadMenu(menu) {
             document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
             document.getElementById('menu-' + menu).classList.add('active');
@@ -220,7 +219,6 @@
                 fetchPenulis();
                 
             } else if (menu === 'artikel') {
-                // Render UI untuk Kelola Artikel
                 konten.innerHTML = `
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h4>Data Artikel</h4>
@@ -255,20 +253,18 @@
             }
         }
 
-        // Fungsi Fetch API untuk mengambil data kategori
+        // Fetch API untuk data kategori
         function fetchKategori() {
             fetch('ambil_kategori.php')
                 .then(response => response.json())
                 .then(data => {
                     const tbody = document.getElementById('tbody-kategori');
-                    tbody.innerHTML = ''; // Kosongkan isi tabel loading
-
+                    tbody.innerHTML = ''; 
                     if (data.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="4" class="text-muted">Belum ada data kategori.</td></tr>';
                         return;
                     }
 
-                    // Looping data dan masukkan ke dalam tabel
                     let no = 1;
                     data.forEach(item => {
                         tbody.innerHTML += `
@@ -290,7 +286,7 @@
                 });
         }
 
-        // Fungsi Fetch API untuk mengambil data Penulis
+        // Fetch API untuk data Penulis
         function fetchPenulis() {
             fetch('ambil_penulis.php')
                 .then(response => response.json())
@@ -304,7 +300,6 @@
                     }
 
                     data.forEach(item => {
-                        // Gabungkan nama depan dan belakang
                         let namaLengkap = item.nama_depan + ' ' + item.nama_belakang;
                         
                         tbody.innerHTML += `
@@ -328,13 +323,12 @@
                 });
         }
         
-        // Menampilkan Modal Tambah Penulis
+        // Tambah Penulis
         function showModalTambahPenulis() {
             document.getElementById('judulModalPenulis').innerText = 'Tambah Penulis';
-            document.getElementById('formPenulis').reset(); // Bersihkan form
+            document.getElementById('formPenulis').reset(); 
             document.getElementById('id_penulis').value = '';
             
-            // Password wajib diisi saat mode Tambah
             document.getElementById('password').required = true; 
             document.getElementById('helpPassword').innerText = ''; 
             
@@ -342,54 +336,47 @@
             modal.show();
         }
 
-        // Menyimpan data Penulis (Bisa foto dan teks berkat FormData)
+        // Menyimpan data Penulis
         function simpanPenulis(event) {
             event.preventDefault();
             let formData = new FormData(document.getElementById('formPenulis'));
             let idPenulis = document.getElementById('id_penulis').value;
             
-            // Tentukan apakah ini sedang mode Tambah atau Edit
             let urlTarget = idPenulis ? 'update_penulis.php' : 'simpan_penulis.php';
 
             fetch(urlTarget, {
                 method: 'POST',
-                body: formData // File foto akan terkirim otomatis di sini
+                body: formData 
             })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
                     alert(data.pesan);
                     bootstrap.Modal.getInstance(document.getElementById('modalPenulis')).hide();
-                    fetchPenulis(); // Refresh tabel penulis
+                    fetchPenulis(); 
                 } else {
-                    alert(data.pesan); // Tampilkan error (misal file kebesaran)
+                    alert(data.pesan); 
                 }
             })
             .catch(error => console.error('Error:', error));
         }
 
-        // Fungsi dummy Penulis (biar tidak error saat di-klik)
-        function editPenulis(id) { alert("Edit Penulis " + id + " coming soon!"); }
-        function hapusPenulis(id) { alert("Hapus Penulis " + id + " coming soon!"); }
-
-        // Menampilkan Modal Tambah Kategori
+        // Tambah Kategori
         function showModalTambahKategori() {
             document.getElementById('judulModalKategori').innerText = 'Tambah Kategori';
-            document.getElementById('formKategori').reset(); // Kosongkan form
-            document.getElementById('id_kategori').value = ''; // Kosongkan ID
+            document.getElementById('formKategori').reset(); 
+            document.getElementById('id_kategori').value = ''; 
             
-            // Munculkan pop-up modal
             let modal = new bootstrap.Modal(document.getElementById('modalKategori'));
             modal.show();
         }
 
-        // Fungsi menyimpan data menggunakan Fetch API (Asynchronous bisa untuk Tambah dan Edit)
+        // Fetch API
         function simpanKategori(event) {
             event.preventDefault();
             let formData = new FormData(document.getElementById('formKategori'));
             let idKategori = document.getElementById('id_kategori').value;
             
-            // Cek apakah ini mode Edit (punya ID) atau Tambah (tidak punya ID)
             let urlTarget = idKategori ? 'update_kategori.php' : 'simpan_kategori.php';
 
             fetch(urlTarget, {
@@ -401,7 +388,7 @@
                 if (data.status === 'success') {
                     alert(data.pesan);
                     bootstrap.Modal.getInstance(document.getElementById('modalKategori')).hide();
-                    fetchKategori(); // Refresh tabel
+                    fetchKategori(); 
                 } else {
                     alert(data.pesan);
                 }
@@ -409,26 +396,24 @@
             .catch(error => console.error('Error:', error));
         }
 
-        // Fungsi menampilkan form Edit dan mengambil datanya
+        // Form Edit dan ambil datanya
         function editKategori(id) {
             fetch('ambil_satu_kategori.php?id=' + id)
             .then(response => response.json())
             .then(data => {
-                // Ubah judul modal dan isi form dengan data lama
                 document.getElementById('judulModalKategori').innerText = 'Edit Kategori';
                 document.getElementById('id_kategori').value = data.id;
                 document.getElementById('nama_kategori').value = data.nama_kategori;
                 document.getElementById('keterangan').value = data.keterangan;
                 
-                // Tampilkan modal
                 let modal = new bootstrap.Modal(document.getElementById('modalKategori'));
                 modal.show();
             })
             .catch(error => console.error('Error fetching data:', error));
         }
 
-        // Fungsi menghapus kategori dengan konfirmasi
-        let urlHapusAktif = ''; // Variabel untuk menyimpan target URL hapus
+        // Menghapus kategori
+        let urlHapusAktif = ''; 
 
         // === FUNGSI EDIT & HAPUS PENULIS ===
         function editPenulis(id) {
@@ -441,7 +426,6 @@
                 document.getElementById('nama_belakang').value = data.nama_belakang;
                 document.getElementById('username').value = data.user_name;
                 
-                // Password tidak wajib diisi saat mode Edit
                 document.getElementById('password').required = false;
                 document.getElementById('password').value = '';
                 document.getElementById('helpPassword').innerText = 'Kosongkan jika tidak ingin mengganti password/foto';
@@ -480,7 +464,7 @@
             .catch(error => console.error('Error:', error));
         }
 
-        // Fungsi Fetch API untuk mengambil data Artikel
+        // Fetch API untuk Data Artikel
         function fetchArtikel() {
             fetch('ambil_artikel.php')
                 .then(response => response.json())
@@ -519,24 +503,22 @@
                 });
         }
         
-        // Fungsi pintar untuk mengambil data Kategori & Penulis, lalu memasukkannya ke Dropdown
+        // Fungsi mengambil data Kategori & Penulis
         function loadDropdowns() {
-            // Mengambil Kategori
             fetch('ambil_kategori.php')
             .then(res => res.json())
             .then(data => {
                 let options = '<option value="">Pilih Kategori...</option>';
                 data.forEach(k => options += `<option value="${k.id}">${k.nama_kategori}</option>`);
-                document.getElementById('select_kategori').innerHTML = options; // <--- Diubah di sini
+                document.getElementById('select_kategori').innerHTML = options; 
             });
             
-            // Mengambil Penulis
             fetch('ambil_penulis.php')
             .then(res => res.json())
             .then(data => {
                 let options = '<option value="">Pilih Penulis...</option>';
                 data.forEach(p => options += `<option value="${p.id}">${p.nama_depan} ${p.nama_belakang}</option>`);
-                document.getElementById('select_penulis').innerHTML = options; // <--- Diubah di sini
+                document.getElementById('select_penulis').innerHTML = options; 
             });
         }
 
@@ -545,15 +527,15 @@
             document.getElementById('judulModalArtikel').innerText = 'Tambah Artikel';
             document.getElementById('formArtikel').reset();
             document.getElementById('id_artikel').value = '';
-            document.getElementById('gambar').required = true; // Wajib upload saat nambah
+            document.getElementById('gambar').required = true; 
             
-            loadDropdowns(); // Panggil fungsi dropdown di atas
+            loadDropdowns(); 
             
             new bootstrap.Modal(document.getElementById('modalArtikel')).show();
         }
 
         function editArtikel(id) {
-            // Karena ini proses asinkron, kita pastikan dropdown terisi dulu sebelum memasukkan nilai (value)
+            // proses asinkron
             fetch('ambil_kategori.php').then(res => res.json()).then(dataKategori => {
                 let optsKategori = '<option value="">Pilih Kategori...</option>';
                 dataKategori.forEach(k => optsKategori += `<option value="${k.id}">${k.nama_kategori}</option>`);
@@ -564,7 +546,6 @@
                     dataPenulis.forEach(p => optsPenulis += `<option value="${p.id}">${p.nama_depan} ${p.nama_belakang}</option>`);
                     document.getElementById('select_penulis').innerHTML = optsPenulis;
 
-                    // Setelah dropdown siap, tarik data artikelnya
                     fetch('ambil_satu_artikel.php?id=' + id)
                     .then(response => response.json())
                     .then(data => {
@@ -575,7 +556,6 @@
                         document.getElementById('select_kategori').value = data.id_kategori;
                         document.getElementById('isi').value = data.isi;
                         
-                        // Gambar tidak wajib diunggah saat mode Edit
                         document.getElementById('gambar').required = false; 
                         
                         new bootstrap.Modal(document.getElementById('modalArtikel')).show();
@@ -584,7 +564,7 @@
             });
         }
 
-        // Fungsi menyimpan artikel (Asynchronous)
+        // Fungsi menyimpan artikel 
         function simpanArtikel(event) {
             event.preventDefault();
             let formData = new FormData(document.getElementById('formArtikel'));
@@ -601,7 +581,7 @@
                 if (data.status === 'success') {
                     alert(data.pesan);
                     bootstrap.Modal.getInstance(document.getElementById('modalArtikel')).hide();
-                    fetchArtikel(); // Reload tabel artikel
+                    fetchArtikel(); 
                 } else {
                     alert(data.pesan);
                 }
@@ -609,7 +589,7 @@
             .catch(error => console.error('Error:', error));
         }
         
-        // Fungsi Hapus Artikel (Bisa langsung kita sambungkan ke modal global kita!)
+        // Fungsi Hapus Artikel
         function hapusArtikel(id) {
             urlHapusAktif = 'hapus_artikel.php?id=' + id;
             new bootstrap.Modal(document.getElementById('modalHapus')).show();

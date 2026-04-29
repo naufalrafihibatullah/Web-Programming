@@ -4,17 +4,14 @@ require_once 'koneksi.php';
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // 1. Ambil dan sanitasi data input (Mencegah XSS)
     $nama_kategori = htmlspecialchars($_POST['nama_kategori'] ?? '', ENT_QUOTES, 'UTF-8');
     $keterangan = htmlspecialchars($_POST['keterangan'] ?? '', ENT_QUOTES, 'UTF-8');
 
-    // Validasi sederhana
     if (empty($nama_kategori)) {
         echo json_encode(['status' => 'error', 'pesan' => 'Nama kategori tidak boleh kosong!']);
         exit;
     }
 
-    // 2. Gunakan Prepared Statement untuk mencegah SQL Injection
     $stmt = $conn->prepare("INSERT INTO kategori_artikel (nama_kategori, keterangan) VALUES (?, ?)");
     $stmt->bind_param("ss", $nama_kategori, $keterangan);
 
