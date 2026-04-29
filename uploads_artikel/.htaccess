@@ -1,0 +1,6 @@
+# Matikan eksekusi script PHP untuk keamanan
+php_flag engine off
+<FilesMatch "\.(php|php4|php5|phtml|inc)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
